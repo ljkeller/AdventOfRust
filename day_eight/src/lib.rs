@@ -3,14 +3,7 @@ pub fn visible_one(trees_fp: &str) -> usize {
 
     let mut forest: Vec<Vec<u8>> = Vec::new();
     if let Ok(trees_string) = std::fs::read_to_string(trees_fp) {
-        trees_string.lines().for_each(|tree_row| {
-            forest.push(
-                tree_row
-                    .chars()
-                    .map(|c| c.to_digit(10).expect("Expect digit") as u8)
-                    .collect(),
-            )
-        });
+        get_forest_from_trees(trees_string, &mut forest);
 
         for (row_idx, tree_row) in forest.iter().enumerate() {
             for (col_idx, tree) in tree_row.iter().enumerate() {
@@ -37,14 +30,7 @@ pub fn visible_two(trees_fp: &str) -> u64 {
 
     let mut forest: Vec<Vec<u8>> = Vec::new();
     if let Ok(trees_string) = std::fs::read_to_string(trees_fp) {
-        trees_string.lines().for_each(|tree_row| {
-            forest.push(
-                tree_row
-                    .chars()
-                    .map(|c| c.to_digit(10).expect("Expect digit") as u8)
-                    .collect(),
-            )
-        });
+        get_forest_from_trees(trees_string, &mut forest);
 
         for (row_idx, tree_row) in forest.iter().enumerate() {
             for (col_idx, tree) in tree_row.iter().enumerate() {
@@ -61,6 +47,17 @@ pub fn visible_two(trees_fp: &str) -> u64 {
     }
 
     return max_view_score;
+}
+
+fn get_forest_from_trees(trees_string: String, forest: &mut Vec<Vec<u8>>) {
+    trees_string.lines().for_each(|tree_row| {
+        forest.push(
+            tree_row
+                .chars()
+                .map(|c| c.to_digit(10).expect("Expect digit") as u8)
+                .collect(),
+        )
+    });
 }
 
 fn tree_score(
