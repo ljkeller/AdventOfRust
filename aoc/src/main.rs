@@ -5,6 +5,7 @@ use day_four;
 use day_five;
 use day_six;
 use day_seven;
+use day_eight;
 
 fn print_results(day: i8, part: i8, result: &str)
 {
@@ -33,8 +34,11 @@ fn main() {
     print_results(6, 1, &day_six::subroutine_one("data/day_six.txt").to_string());
     print_results(6, 2, &day_six::subroutine_two("data/day_six.txt").to_string());
 
-    print_results(6, 1, &day_seven::size_one("data/day_seven.txt").to_string());
-    print_results(6, 2, &day_seven::tmp_two("data/day_seven.txt").to_string());
+    print_results(7, 1, &day_seven::size_one("data/day_seven.txt").to_string());
+    print_results(7, 2, &day_seven::tmp_two("data/day_seven.txt").to_string());
+
+    print_results(8, 1, &day_eight::visible_one("data/day_eight.txt").to_string());
+    print_results(8, 2, &day_eight::visible_two("data/day_eight.txt").to_string());
 
     println!("End of results");
 }
