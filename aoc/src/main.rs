@@ -6,6 +6,7 @@ use day_five;
 use day_six;
 use day_seven;
 use day_eight;
+use day_nine;
 
 fn print_results(day: i8, part: i8, result: &str)
 {
@@ -39,6 +40,9 @@ fn main() {
 
     print_results(8, 1, &day_eight::visible_one("data/day_eight.txt").to_string());
     print_results(8, 2, &day_eight::visible_two("data/day_eight.txt").to_string());
+
+    print_results(9, 1, &day_nine::visited_positions("data/day_nine.txt").to_string());
+    print_results(9, 2, &day_nine::temp_two("data/day_nine.txt").to_string());
 
     println!("End of results");
 }
