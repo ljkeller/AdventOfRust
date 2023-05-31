@@ -42,7 +42,7 @@ fn main() {
     print_results(8, 2, &day_eight::visible_two("data/day_eight.txt").to_string());
 
     print_results(9, 1, &day_nine::visited_positions("data/day_nine.txt").to_string());
-    print_results(9, 2, &day_nine::temp_two("data/day_nine.txt").to_string());
+    print_results(9, 2, &day_nine::visited_positions2("data/day_nine.txt").to_string());
 
     println!("End of results");
 }
