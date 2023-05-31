@@ -19,9 +19,9 @@ pub fn size_one(terminal_output_fp: &str) -> i64 {
     }
 
     // do a post_order traversal to count datasize, propogating data up
-    tree.root().unwrap().traverse_post_order().for_each(|n| {
-        println!("{}", n.data());
-    });
+    // tree.root().unwrap().traverse_post_order().for_each(|n| {
+    //     println!("{}", n.data());
+    // });
 
     return byte_sum;
 }
