@@ -44,5 +44,8 @@ fn main() {
     print_results(9, 1, &day_nine::visited_positions("data/day_nine.txt").to_string());
     print_results(9, 2, &day_nine::visited_positions2("data/day_nine.txt").to_string());
 
+    print_results(9, 1, &day_ten::find_signal_strengths("day_ten.txt", vec![20, 60, 100, 140, 180, 220]).to_string());
+    print_results(9, 2, &day_ten::s2("").to_string());
+
     println!("End of results");
 }
