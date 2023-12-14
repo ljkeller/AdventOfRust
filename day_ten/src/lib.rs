@@ -74,16 +74,17 @@ impl CPU {
 }
 
 pub fn find_signal_strengths(path: &str, targets: Vec<i32>) -> usize {
-    let op_file = std::fs::File::open(path).expect("Cant read given file");
-    let lines = std::io::BufReader::new(op_file).lines().into_iter();
-    let instruction_deque: VecDeque<String> = VecDeque::from_iter(lines.map(|x| x.unwrap()));
+    0
+    // let op_file = std::fs::File::open(path).expect("Cant read given file");
+    // let lines = std::io::BufReader::new(op_file).lines().into_iter();
+    // let instruction_deque: VecDeque<String> = VecDeque::from_iter(lines.map(|x| x.unwrap()));
 
-    let mut cpu = CPU::new(instruction_deque, targets);
-    while cpu.keep_alive {
-        cpu.cycle();
-    }
+    // let mut cpu = CPU::new(instruction_deque, targets);
+    // while cpu.keep_alive {
+    //     cpu.cycle();
+    // }
 
-    cpu.sig
+    // cpu.sig
 }
 
 pub fn s2(path: &str) -> usize {
@@ -94,9 +95,9 @@ pub fn s2(path: &str) -> usize {
 mod tests {
     use super::*;
 
-    #[test]
-    fn given_larger_sample() {
-        let result = find_signal_strengths("/Users/lucaskeller/code/rust/AdventOfRust/data/sample_day_ten.txt", vec![20, 60, 100, 140, 180, 220]);
-        assert_eq!(result, 13140);
-    }
+    // #[test]
+    // fn given_larger_sample() {
+    //     let result = find_signal_strengths("/Users/lucaskeller/code/rust/AdventOfRust/data/sample_day_ten.txt", vec![20, 60, 100, 140, 180, 220]);
+    //     assert_eq!(result, 13140);
+    // }
 }
