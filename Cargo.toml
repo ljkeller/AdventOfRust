@@ -13,4 +13,5 @@ members = [
     "day_nine",
     "day_ten",
     "aoc_2023/day_one_trebuchet",
+    "aoc_2023/day_two_cube",
 ]
