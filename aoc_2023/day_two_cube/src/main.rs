@@ -13,8 +13,8 @@ fn split_game_info(game: &str) -> (usize, &str) {
     (id, scores_postfix)
 }
 
-fn valid_game(sets: &str, constraints: &HashMap<&str, usize>) -> bool {
-    let set_split = sets.split(";").map(|s| s.trim());
+fn valid_game(game_scores: &str, constraints: &HashMap<&str, usize>) -> bool {
+    let set_split = game_scores.split(";").map(|s| s.trim());
     for set in set_split {
         for record in set.split(",").map(|s| s.trim()) {
             let (str_score, color) = record
@@ -31,25 +31,47 @@ fn valid_game(sets: &str, constraints: &HashMap<&str, usize>) -> bool {
     true
 }
 
-fn sum_of_possible_games<P: AsRef<Path>>(games_path: P) -> usize {
-    let mut cum_sum = 0;
+fn power(game_scores: &str) -> usize {
+    let set_split = game_scores.split(";").map(|s| s.trim());
+    let mut max_scores = HashMap::from([("red", 0), ("green", 0), ("blue", 0)]);
+    for set in set_split {
+        for record in set.split(",").map(|s| s.trim()) {
+            let (str_score, color) = record
+                .split_once(" ")
+                .expect("Expect split color and score");
+
+            let num_score = str_score.parse::<usize>().expect("Expect usize from score");
+            if num_score > *max_scores.get(color).expect("Expect color in map") {
+                max_scores.insert(color, num_score);
+            }
+        }
+    }
+    max_scores.values().product()
+}
+
+fn day_two_bundle<P: AsRef<Path>>(games_path: P) -> (usize, usize) {
+    let mut sum_of_valid = 0;
+    let mut sum_of_power = 0;
     let constraints: HashMap<&str, usize> =
         std::collections::HashMap::from([("red", 12), ("green", 13), ("blue", 14)]);
 
     let games = std::fs::read_to_string(games_path).expect("Expect games filepath for parsing");
     for game in games.lines() {
         let (id, scores) = split_game_info(game);
+        // part 1
         if valid_game(&scores, &constraints) {
-            cum_sum += id;
+            sum_of_valid += id;
         }
+        // part 2
+        sum_of_power += power(scores);
     }
-    cum_sum
+    (sum_of_valid, sum_of_power)
 }
 
 fn main() {
     println!(
-        "{}",
-        sum_of_possible_games("aoc_2023/day_two_cube/data/input1.txt")
+        "(p1, p2) {:?}",
+        day_two_bundle("aoc_2023/day_two_cube/data/input1.txt")
     );
 }
 
@@ -57,7 +79,12 @@ fn main() {
 mod tests {
     use super::*;
     #[test]
-    fn basic() {
-        assert_eq!(sum_of_possible_games("data/example1.txt"), 8);
+    fn ex1() {
+        assert_eq!(day_two_bundle("data/example1.txt").0, 8);
+    }
+
+    #[test]
+    fn ex2() {
+        assert_eq!(day_two_bundle("data/example1.txt").1, 2286);
     }
 }
