@@ -41,9 +41,10 @@ fn power(game_scores: &str) -> usize {
                 .expect("Expect split color and score");
 
             let num_score = str_score.parse::<usize>().expect("Expect usize from score");
-            if num_score > *max_scores.get(color).expect("Expect color in map") {
-                max_scores.insert(color, num_score);
-            }
+            max_scores.insert(
+                color,
+                num_score.max(*max_scores.get(color).expect("Expect color in map")),
+            );
         }
     }
     max_scores.values().product()
