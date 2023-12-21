@@ -37,6 +37,10 @@ fn star_neighbors(
     r_len: usize,
     c_len: usize,
 ) -> Vec<(usize, usize)> {
+    if r > r_len || c > c_len {
+        panic!("Invalid row {r} or col {c}: max row: {r_len}, max col: {c_len}");
+    }
+
     let mut star_neighbors: Vec<(usize, usize)> = Vec::new();
     if r > 0 && c > 0 && grid[r - 1][c - 1] == '*' {
         star_neighbors.push((r - 1, c - 1));
