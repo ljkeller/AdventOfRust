@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use std::{borrow::Borrow, path::Path};
+use std::path::Path;
 
 fn ints(ints_str: &str) -> Vec<u32> {
     let mut ints = Vec::new();
@@ -19,10 +19,11 @@ fn score<P: AsRef<Path>>(score_ref: P) -> (usize, usize) {
     let mut score_total_p1: usize = 0;
 
     let scorecards = std::fs::read_to_string(score_ref).expect("Expect scorecard file");
-    let scorecard_lines = scorecards.lines();
+    let scorecard_lines: Vec<&str> = scorecards.lines().collect();
+    // vec of (#instanced, #matching_card_numbers)
+    let mut scratchard_freq_match_tuples: Vec<(usize, usize)> = vec![(1, 0); scorecard_lines.len()];
 
-    for scorecard in scorecard_lines {
-        //p1
+    for (cur_card_idx, scorecard) in scorecard_lines.into_iter().enumerate() {
         let mut winning_card_count: u32 = 0;
 
         let scores = scorecard
@@ -32,7 +33,7 @@ fn score<P: AsRef<Path>>(score_ref: P) -> (usize, usize) {
 
         let (current_string, winning_string) = scores
             .split_once(" | ")
-            .expect("Expect scorecard to split at ': '");
+            .expect("Expect scores to split at ' | '");
 
         let current_cards = ints(current_string);
         let winning_cards: HashSet<u32> = HashSet::from_iter(ints(winning_string));
@@ -46,9 +47,17 @@ fn score<P: AsRef<Path>>(score_ref: P) -> (usize, usize) {
         if winning_card_count > 0 {
             score_total_p1 += 2_usize.pow(winning_card_count - 1);
         }
+        // slide down by magnitude(matching numbers), and increase scratchard count by frequency(cur card)
+        scratchard_freq_match_tuples[cur_card_idx].1 += winning_card_count as usize;
+        for offset_idx in 1..=scratchard_freq_match_tuples[cur_card_idx].1 as usize {
+            scratchard_freq_match_tuples[cur_card_idx + offset_idx].0 +=
+                scratchard_freq_match_tuples[cur_card_idx].0;
+        }
     }
-
-    (score_total_p1, 0)
+    (
+        score_total_p1,
+        scratchard_freq_match_tuples.into_iter().map(|t| t.0).sum(),
+    )
 }
 
 fn main() {
@@ -65,5 +74,10 @@ mod test {
     #[test]
     fn ex1() {
         assert_eq!(score("data/ex1.txt").0, 13);
+    }
+
+    #[test]
+    fn ex2() {
+        assert_eq!(score("data/ex1.txt").1, 30);
     }
 }
