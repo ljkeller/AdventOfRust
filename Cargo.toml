@@ -15,5 +15,6 @@ members = [
     "aoc_2023/day_one_trebuchet",
     "aoc_2023/day_two_cube",
     "aoc_2023/day_three_gear_ratios",
-    "aoc_2023/day_four_scratchcards"
+    "aoc_2023/day_four_scratchcards",
+    "aoc_2023/day_five_seed",
 ]
