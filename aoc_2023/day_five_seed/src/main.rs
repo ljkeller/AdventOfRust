@@ -146,11 +146,15 @@ impl Almanac {
 }
 
 trait Mappable {
-    fn to_location(&mut self, global_map: Almanac);
+    fn to_location(&mut self, global_map: &Almanac);
+}
+
+trait MappableInterval {
+    fn to_location(&mut self, global_map: &Almanac) -> Vec<usize>;
 }
 
 impl Mappable for Vec<usize> {
-    fn to_location(&mut self, global_map: Almanac) {
+    fn to_location(&mut self, global_map: &Almanac) {
         self.iter_mut().for_each(|s| {
             let mut tmp = global_map.to_soil(&s);
             tmp = global_map.to_fertilizer(&tmp);
@@ -164,6 +168,28 @@ impl Mappable for Vec<usize> {
     }
 }
 
+impl MappableInterval for Vec<(usize, usize)> {
+    fn to_location(&mut self, global_map: &Almanac) -> Vec<usize> {
+        let mut optimal_locs: Vec<usize> = Vec::new();
+        self.iter_mut().for_each(|s| {
+            println!("Parsing new pair! {:?}", s);
+            let mut min_dist = usize::MAX;
+            for seed_idx in s.0..s.0 + s.1 {
+                let mut tmp = global_map.to_soil(&seed_idx);
+                tmp = global_map.to_fertilizer(&tmp);
+                tmp = global_map.to_water(&tmp);
+                tmp = global_map.to_light(&tmp);
+                tmp = global_map.to_temperature(&tmp);
+                tmp = global_map.to_humidity(&tmp);
+                tmp = global_map.to_location(&tmp);
+                min_dist = min_dist.min(tmp);
+            }
+            optimal_locs.push(min_dist);
+        });
+
+        optimal_locs
+    }
+}
 fn parse_seed_data(data: &str) -> (Vec<usize>, Almanac) {
     let mut almanac = Almanac::new();
 
@@ -198,9 +224,22 @@ fn solve_seed_mapping<P: AsRef<Path>>(seed_path: P) -> (usize, usize) {
     let seeds_data = std::fs::read_to_string(seed_path).expect("Expect seed path");
 
     let (mut seeds, global_map) = parse_seed_data(&seeds_data);
-    seeds.to_location(global_map);
+    let mut seed_pairs = seeds
+        .clone()
+        .chunks(2)
+        .into_iter()
+        .map(|chunk| (chunk[0], chunk[1]))
+        .collect::<Vec<(usize, usize)>>();
+    seeds.to_location(&global_map);
+    let optimal_seed_locs = seed_pairs.to_location(&global_map);
 
-    (seeds.into_iter().min().expect("Expect min location"), 0)
+    (
+        seeds.into_iter().min().expect("Expect min location"),
+        optimal_seed_locs
+            .into_iter()
+            .min()
+            .expect("Expect min location"),
+    )
 }
 
 fn main() {
