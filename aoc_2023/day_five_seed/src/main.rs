@@ -1,3 +1,6 @@
+use rayon::prelude::*;
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::{path::Path, str::FromStr};
 
 trait Ints {
@@ -170,8 +173,8 @@ impl Mappable for Vec<usize> {
 
 impl MappableInterval for Vec<(usize, usize)> {
     fn to_location(&mut self, global_map: &Almanac) -> Vec<usize> {
-        let mut optimal_locs: Vec<usize> = Vec::new();
-        self.iter_mut().for_each(|s| {
+        let optimal_locs = Arc::new(Mutex::new(Vec::new()));
+        self.par_iter_mut().for_each(|s| {
             println!("Parsing new pair! {:?}", s);
             let mut min_dist = usize::MAX;
             for seed_idx in s.0..s.0 + s.1 {
@@ -184,12 +187,16 @@ impl MappableInterval for Vec<(usize, usize)> {
                 tmp = global_map.to_location(&tmp);
                 min_dist = min_dist.min(tmp);
             }
-            optimal_locs.push(min_dist);
+            optimal_locs.lock().unwrap().push(min_dist);
         });
 
-        optimal_locs
+        std::sync::Arc::try_unwrap(optimal_locs)
+            .expect("Expect release of Mutex(Vec)")
+            .into_inner()
+            .expect("Expect release of Vec from mutex")
     }
 }
+
 fn parse_seed_data(data: &str) -> (Vec<usize>, Almanac) {
     let mut almanac = Almanac::new();
 
@@ -258,7 +265,8 @@ mod test {
         assert_eq!(solve_seed_mapping("data/ex1.txt").0, 35);
     }
 
-    // #[test]
-    // fn ex2() {
-    // }
+    #[test]
+    fn ex2() {
+        assert_eq!(solve_seed_mapping("data/ex1.txt").1, 46)
+    }
 }
