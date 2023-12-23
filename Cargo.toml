@@ -18,4 +18,5 @@ members = [
     "aoc_2023/day_four_scratchcards",
     "aoc_2023/day_five_seed",
     "aoc_2023/day_six_boat",
+    "aoc_2023/day_seven_cards",
 ]
