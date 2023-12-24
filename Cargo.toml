@@ -19,4 +19,5 @@ members = [
     "aoc_2023/day_five_seed",
     "aoc_2023/day_six_boat",
     "aoc_2023/day_seven_cards",
+    "aoc_2023/day_eight_haunted",
 ]
