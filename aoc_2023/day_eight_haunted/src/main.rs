@@ -7,7 +7,7 @@ fn split_lr(s: &str) -> (String, String) {
     let mut is_left = true;
 
     for c in s.chars() {
-        if c.is_alphabetic() {
+        if c.is_alphabetic() || c.is_numeric() {
             if is_left {
                 l.push(c);
             } else {
@@ -20,14 +20,6 @@ fn split_lr(s: &str) -> (String, String) {
 
     (l, r)
 }
-
-// splits (abc, def) -> "abc", "def"
-// fn split_lr(s: &str) -> (String, String) {
-//     let cleaned = s.trim_matches(|c: char| c.is_whitespace() || c == '(' || c == ')');
-//     println!("Cleaned: {}", cleaned);
-//     let (l, r) = cleaned.split_once(",").expect("Expect split at ','");
-//     (l.to_string(), r.to_string())
-// }
 
 fn parse_map(data: &str) -> (String, HashMap<String, (String, String)>) {
     let mut network = HashMap::<String, (String, String)>::new();
@@ -48,10 +40,11 @@ fn parse_map(data: &str) -> (String, HashMap<String, (String, String)>) {
 }
 
 fn steps<P: AsRef<Path>>(map_p: P) -> (usize, usize) {
-    let mut steps = 0;
+    let (mut steps, mut ghost_steps) = (0, 0);
     let map_data = std::fs::read_to_string(map_p).expect("Expect map data");
     let (directions, network) = parse_map(&map_data);
 
+    // p1
     let mut cur = "AAA";
     for direction in directions.chars().cycle() {
         if cur == "ZZZ" {
@@ -68,7 +61,47 @@ fn steps<P: AsRef<Path>>(map_p: P) -> (usize, usize) {
         steps += 1;
     }
 
-    (steps, 0)
+    // p2
+    let mut ghost_positions = Vec::<&str>::new();
+    for (k, _) in network.iter() {
+        if k.ends_with("A") {
+            ghost_positions.push(k);
+        }
+    }
+    let mut ghost_cycles = vec![0 as usize; ghost_positions.len()];
+
+    for direction in directions.chars().cycle() {
+        for (idx, pos) in ghost_positions.iter().enumerate() {
+            if pos.ends_with("Z") && ghost_cycles[idx] == 0 {
+                ghost_cycles[idx] = ghost_steps;
+            }
+        }
+
+        if ghost_cycles.iter().all(|c| *c > 0) {
+            break;
+        }
+
+        ghost_positions.iter_mut().for_each(|p| {
+            if direction == 'L' {
+                *p = &network.get(*p).expect("Expect node in network").0;
+            } else {
+                // R
+                *p = &network.get(*p).expect("Expect node in network").1;
+            }
+        });
+
+        ghost_steps += 1;
+        if ghost_steps % 1000000 == 0 {
+            println!("ghost steps: {}", ghost_steps);
+        }
+    }
+
+    (
+        steps,
+        ghost_cycles
+            .iter()
+            .fold(1, |acc, c| num::integer::lcm(acc, *c)),
+    )
 }
 
 fn main() {
@@ -89,6 +122,6 @@ mod test {
 
     #[test]
     fn ex_p2() {
-        assert_eq!(steps("data/ex1.txt").1, 0)
+        assert_eq!(steps("data/ex2.txt").1, 6)
     }
 }
